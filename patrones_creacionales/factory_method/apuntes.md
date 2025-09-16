@@ -15,8 +15,6 @@ Esto:
 - Facilita agregar nuevos productos sin modificar el código existente (Principio Open/Closed).
 - Desacopla el código cliente de las clases concretas.
 
----
-
 ## Forma clásica (GoF)
 
 Cuando cada fábrica concreta devuelve un único tipo de producto.
@@ -69,8 +67,6 @@ public class FabricaCamisas extends Fabrica {
 
 **Aquí cada fábrica concreta es responsable de un solo producto.**
 
----
-
 ## Forma simplificada (Factory Method parametrizado)
 
 Cuando se quiere que una sola fábrica maneje varias variantes del mismo producto.
@@ -101,8 +97,6 @@ public class FabricaZapatos extends Fabrica {
 **Aquí una sola fábrica concreta decide qué variante devolver.**
 Esto evita crear demasiadas clases, pero mete la lógica de selección en un switch.
 
----
-
 ## Forma simplificada (sin clase abstracta)
 
 Puede tener una sola clase Factory concreta con un método que decida qué objeto instanciar en base a un parámetro.
@@ -123,15 +117,46 @@ public class ProductoFactory {
 ````
 **Aquí no hay jerarquía de fábricas. Todo se resuelve en un único punto.**
 
+## Factory con registro dinámico (mapa de suppliers)
+
+En vez de usar switch, se puede registrar dinámicamente constructores de productos (con funciones, lambdas o incluso Supplier en Java).
+
+````java
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
+
+public class ProductoFactory {
+    private static final Map<String, Supplier<CrearProducto>> registry = new HashMap<>();
+
+    static {
+        registry.put("zapato", Zapatos::new);
+        registry.put("camisa", Camisa::new);
+    }
+
+    public static CrearProducto crearProducto(String tipo) {
+        Supplier<CrearProducto> supplier = registry.get(tipo);
+        if (supplier != null) {
+            return supplier.get();
+        }
+        throw new IllegalArgumentException("Tipo no soportado: " + tipo);
+    }
+}
+````
+
+Con esto se evita modificar el switch cada vez que se agrega un producto nuevo.
 
 ---
 
 ### Conclusión
 
-**Factory Method clásico**: más limpio, más extensible, pero crea muchas clases.
+**Factory Method clásico**: más limpio, más extensible, pero crea muchas clases. se ve mucho en 
+Frameworks/librerías
 
-**Factory Method simplificado**: más práctico en proyectos pequeños o cuando hay muchas variantes de un mismo producto.
+**Factory Method simplificado**: más práctico en proyectos pequeños o cuando hay muchas variantes de un mismo producto. se ve mucho en Proyectos pequeños/medianos.
 
-**Simplificado con switch**: cuando el caso es pequeño y concreto.
+**Simplificado con switch**: cuando el caso es pequeño y concreto. se ve mucho en Proyectos pequeños/medianos
+
+**Registro dinamico**: se ve mucho en Proyectos medianos/grandes/extensibles
 
 todos siguen la misma idea: delegar la creación del objeto a un método especializado en lugar de usar new en el código cliente.
