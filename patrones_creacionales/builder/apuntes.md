@@ -2,6 +2,8 @@
 
 El patron builder es un patron creacional que se usa cuando se quiere construir objetos complejos paso a paso, sin necesidad de tener un constructor gigante con mil parametros
 
+**Frase cocisa**: "Builder facilita la creación de objetos complejos de forma clara y flexible, sin depender de constructores largos."
+
 La idea es separar la construcción de un objeto de su representación, para que el mismo proceso pueda crear diferentes representaciones.
 
 
@@ -146,11 +148,20 @@ Usuario usuario = builder.build();
 1. **Builder Interno** (inner static class): El builder vive dentro de la misma clase.
 El constructor de la clase es private y solo se accede a través del builder.
 
-2. **Builder externo**: El builder es una clase independiente que crea otro objeto.
-Muy útil cuando el objeto a construir viene de una librería o framework que no se puede 
-modificar.
+2. **Builder externo**: El Builder externo es una clase independiente que encapsula la lógica 
+de construcción de otro objeto. Es especialmente útil cuando:
 
-3. **Builder con Director** (GoF clásico): Es la forma más “académica” del patrón (la del libro GoF).
+- El objeto tiene muchos parámetros, algunos opcionales.
+- Se busca mayor claridad y legibilidad al instanciar objetos.
+- La clase a construir proviene de una librería o framework **y tiene un constructor público o 
+accesible**, pero no ofrece su propio Builder.
+
+Nota: El Builder externo **no puede instanciar clases con constructores privados o 
+protegidos**. En esos casos, se requiere acceso desde el mismo paquete o una API pública que 
+permita la construcción.
+
+3. **Builder con Director** (GoF clásico): Es la forma más “académica” del patrón (la del libro 
+GoF).
 
 Tiene tres actores:
 
@@ -219,7 +230,8 @@ Casa casa = builder.getResultado();
 
 **En conclusión**:
 
-- Lo más usado hoy en día en Java empresarial → builder interno + fluent API (como Lombok @Builder).
+- Lo más usado hoy en día en Java empresarial → builder interno + fluent API (como Lombok 
+@Builder).
 
 - Lo que se usa en frameworks o objetos de terceros → builder externo como ServerBuilder.
 
